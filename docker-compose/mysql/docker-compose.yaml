@@ -1,0 +1,16 @@
+version: '0.1'
+
+services:
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - './LuxComidas:/var/lib/mysql'
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: comidas-reservas-system-db
+    ports:
+      - '3306:3306'
+      
