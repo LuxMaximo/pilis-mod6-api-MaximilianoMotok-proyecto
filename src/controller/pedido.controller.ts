@@ -1,16 +1,19 @@
 import { Request, Response } from "express";
 import { Bebida } from "../entity/Bebidas";
+import { Comida } from "../entity/Comidas";
+import { Pedido } from "../entity/Pedidos";
+import { Postre } from "../entity/Postres";
+
+//Corregir
 
 
-
-
-export const getBebidas = async (req: Request, res: Response) => {
+export const getPedidos = async (req: Request, res: Response) => {
     console.log('entrando...');
     try {
-        const bebidas = await Bebida.find({
+        const pedido = await Pedido.find({
             relations: {}
         })
-        return res.json(bebidas)
+        return res.json(pedido)
 
     } catch (error) {
         if (error instanceof Error) {
@@ -20,18 +23,18 @@ export const getBebidas = async (req: Request, res: Response) => {
 };
 
 
-export const getBebida = async (req: Request, res: Response) => {
+export const getPedido = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const bebida = await Bebida.findOne({
+        const pedido = await Pedido.findOne({
             where: { id: parseInt(id) },
         })
 
 
-        if (!bebida) return res.status(404).json({ message: "User not found" });
+        if (!pedido) return res.status(404).json({ message: "Pedido not found" });
 
-        return res.json(bebida);
+        return res.json(pedido);
 
     } catch (error) {
         if (error instanceof Error) {
@@ -41,31 +44,79 @@ export const getBebida = async (req: Request, res: Response) => {
 };
 
 
-export const createBebida = async (req: Request, res: Response) => {
-    const { nombre, litro, precio } = req.body;
+export const createPedidoMenuCombo = async (req: Request, res: Response) => {
+    const { nombre, menu } = req.body;
 
-    //Creacion de bebida
-    const bebida = new Bebida();
-    bebida.nombre = nombre;
-    bebida.litro = litro
-    bebida.precio = precio;
+    try {
+        const elMenu = await Pedido.findOneBy({ id: parseInt(menu) });
+        if (!elMenu) return res.status(404).json({ message: "No se encontro el pedido" });
+        let precioComida = Number(elMenu.menuCombo.comida.precio)
+        let precioBebida = Number(elMenu.menuCombo.bebida.precio)
 
 
-    await bebida.save();
+        let precios = precioComida + precioBebida
+        //Creacion de pedido
+        const pedido = new Pedido();
+        pedido.menuCombo = menu;
+        pedido.precio = precios;
 
-    return res.json(bebida);
+
+
+        await pedido.save();
+
+        return res.json(pedido);
+    } catch (error) {
+
+    }
 };
 
 
-export const updateBebida = async (req: Request, res: Response) => {
+export const createPedido = async (req: Request, res: Response) => {
+    const { comida, bebida, postre } = req.body;
+
+    try {
+        const laComida = await Comida.findOneBy({ nombre: comida });
+        if (!laComida) return res.status(404).json({ message: "No se encontro la comida" });
+
+        const laBebida = await Bebida.findOneBy({ nombre: bebida });
+        if (!laBebida) return res.status(404).json({ message: "No se encontro la bebida" });
+
+        const elPostre = await Postre.findOneBy({ nombre: postre });
+        if (!elPostre) return res.status(404).json({ message: "No se encontro el postre" });
+
+        let precioComida = Number(laComida.precio)
+        let precioBebida = Number(laBebida.precio)
+        let precioPostre = Number(elPostre.precio)
+
+
+        let precios = precioComida + precioBebida + precioPostre
+
+        //Creacion de pedido por unidad
+        const pedido = new Pedido();
+        pedido.comida = comida;
+        pedido.bebida = bebida;
+        pedido.postre = postre;
+        pedido.precio = precios;
+
+
+
+        await pedido.save();
+
+        return res.json(pedido);
+    } catch (error) {
+
+    }
+};
+
+export const updatePedido = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const bebida = await Bebida.findOneBy({ id: parseInt(id) });
+        const pedido = await Pedido.findOneBy({ id: parseInt(id) });
 
-        if (!bebida) return res.status(404).json({ message: "No se encontro la bebida" });
+        if (!pedido) return res.status(404).json({ message: "No se encontro el pedido" });
 
-        await Bebida.update({ id: parseInt(id) }, req.body);
+        await Pedido.update({ id: parseInt(id) }, req.body);
 
         return res.sendStatus(204);
 
@@ -77,13 +128,13 @@ export const updateBebida = async (req: Request, res: Response) => {
 };
 
 
-export const deleteBebida = async (req: Request, res: Response) => {
+export const deletePedido = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const result = await Bebida.delete({ id: parseInt(id) });
+        const result = await Pedido.delete({ id: parseInt(id) });
 
         if (result.affected === 0)
-            return res.status(404).json({ message: "Bebida no encontrada" });
+            return res.status(404).json({ message: "Pedido no encontrado" });
 
         return res.sendStatus(204);
     } catch (error) {

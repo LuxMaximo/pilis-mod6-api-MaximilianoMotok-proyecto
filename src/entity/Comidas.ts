@@ -13,6 +13,6 @@ export class Comida extends BaseEntity {
     descripcion: string;
 
     @Column()
-    precio: Double;
+    precio: Number;
 
 }

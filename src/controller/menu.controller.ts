@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
-import { Bebida } from "../entity/Bebidas";
+import { Menu } from "../entity/Menu";
+
+//Corregir
 
 
-
-
-export const getBebidas = async (req: Request, res: Response) => {
+export const getMenus = async (req: Request, res: Response) => {
     console.log('entrando...');
     try {
-        const bebidas = await Bebida.find({
+        const menu = await Menu.find({
             relations: {}
         })
-        return res.json(bebidas)
+        return res.json(menu)
 
     } catch (error) {
         if (error instanceof Error) {
@@ -20,18 +20,18 @@ export const getBebidas = async (req: Request, res: Response) => {
 };
 
 
-export const getBebida = async (req: Request, res: Response) => {
+export const getMenu = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const bebida = await Bebida.findOne({
+        const menu = await Menu.findOne({
             where: { id: parseInt(id) },
         })
 
 
-        if (!bebida) return res.status(404).json({ message: "User not found" });
+        if (!menu) return res.status(404).json({ message: "Menu not found" });
 
-        return res.json(bebida);
+        return res.json(menu);
 
     } catch (error) {
         if (error instanceof Error) {
@@ -41,31 +41,32 @@ export const getBebida = async (req: Request, res: Response) => {
 };
 
 
-export const createBebida = async (req: Request, res: Response) => {
-    const { nombre, litro, precio } = req.body;
+export const createMenu = async (req: Request, res: Response) => {
+    const { nombre, bebida, comida, postre } = req.body;
 
-    //Creacion de bebida
-    const bebida = new Bebida();
-    bebida.nombre = nombre;
-    bebida.litro = litro
-    bebida.precio = precio;
+    //Creacion de menu
+    const menu = new Menu();
+    menu.nombreMenu = nombre;
+    menu.bebida = bebida;
+    menu.comida = comida;
+    menu.postre = postre;
 
 
-    await bebida.save();
+    await menu.save();
 
-    return res.json(bebida);
+    return res.json(menu);
 };
 
 
-export const updateBebida = async (req: Request, res: Response) => {
+export const updateMenu = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const bebida = await Bebida.findOneBy({ id: parseInt(id) });
+        const menu = await Menu.findOneBy({ id: parseInt(id) });
 
-        if (!bebida) return res.status(404).json({ message: "No se encontro la bebida" });
+        if (!menu) return res.status(404).json({ message: "No se encontro el menu" });
 
-        await Bebida.update({ id: parseInt(id) }, req.body);
+        await Menu.update({ id: parseInt(id) }, req.body);
 
         return res.sendStatus(204);
 
@@ -77,13 +78,13 @@ export const updateBebida = async (req: Request, res: Response) => {
 };
 
 
-export const deleteBebida = async (req: Request, res: Response) => {
+export const deleteMenu = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const result = await Bebida.delete({ id: parseInt(id) });
+        const result = await Menu.delete({ id: parseInt(id) });
 
         if (result.affected === 0)
-            return res.status(404).json({ message: "Bebida no encontrada" });
+            return res.status(404).json({ message: "Menu no encontrado" });
 
         return res.sendStatus(204);
     } catch (error) {

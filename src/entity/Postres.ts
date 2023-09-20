@@ -13,6 +13,6 @@ export class Postre extends BaseEntity {
     descripcion: string;
 
     @Column()
-    precio: Double;
+    precio: number;
 
 }

@@ -1,16 +1,18 @@
 import { Request, Response } from "express";
-import { Bebida } from "../entity/Bebidas";
+import { Pedido } from "../entity/Pedidos";
+import { Ticket } from "../entity/Tickets";
+import { Usuario } from "../entity/Usuarios";
 
 //corregir
 
 
-export const getBebidas = async (req: Request, res: Response) => {
+export const getTickets = async (req: Request, res: Response) => {
     console.log('entrando...');
     try {
-        const bebidas = await Bebida.find({
+        const ticket = await Ticket.find({
             relations: {}
         })
-        return res.json(bebidas)
+        return res.json(ticket)
 
     } catch (error) {
         if (error instanceof Error) {
@@ -20,18 +22,18 @@ export const getBebidas = async (req: Request, res: Response) => {
 };
 
 
-export const getBebida = async (req: Request, res: Response) => {
+export const getTicket = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const bebida = await Bebida.findOne({
+        const ticket = await Ticket.findOne({
             where: { id: parseInt(id) },
         })
 
 
-        if (!bebida) return res.status(404).json({ message: "User not found" });
+        if (!ticket) return res.status(404).json({ message: "Ticket not found" });
 
-        return res.json(bebida);
+        return res.json(ticket);
 
     } catch (error) {
         if (error instanceof Error) {
@@ -41,31 +43,45 @@ export const getBebida = async (req: Request, res: Response) => {
 };
 
 
-export const createBebida = async (req: Request, res: Response) => {
-    const { nombre, litro, precio } = req.body;
+export const createTicket = async (req: Request, res: Response) => {
+    const { idUsuario, idPedido } = req.body;
 
-    //Creacion de bebida
-    const bebida = new Bebida();
-    bebida.nombre = nombre;
-    bebida.litro = litro
-    bebida.precio = precio;
+    let propina = 0.5
+    try {
+        const elPedido = await Pedido.findOneBy({ id: parseInt(idPedido) });
+        if (!elPedido) return res.status(404).json({ message: "No se encontro el Pedido" });
+
+        const elUsuario = await Usuario.findOneBy({ id: parseInt(idUsuario) });
+        if (!elUsuario) return res.status(404).json({ message: "No se encontro el Pedido" });
+
+        //Creacion de Ticket
+        const ticket = new Ticket();
+        ticket.usuario = elUsuario;
+        ticket.pedido = elPedido;
+        ticket.precioTotal = Number(elPedido.precio) + (Number(elPedido.precio) * propina);
 
 
-    await bebida.save();
+        await ticket.save();
 
-    return res.json(bebida);
+        return res.json(ticket);
+    } catch (error) {
+        if (error instanceof Error) {
+            return res.status(500).json({ message: error.message });
+        }
+    }
+
 };
 
 
-export const updateBebida = async (req: Request, res: Response) => {
+export const updateTicket = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const bebida = await Bebida.findOneBy({ id: parseInt(id) });
+        const ticket = await Ticket.findOneBy({ id: parseInt(id) });
 
-        if (!bebida) return res.status(404).json({ message: "No se encontro la bebida" });
+        if (!ticket) return res.status(404).json({ message: "No se encontro el ticket" });
 
-        await Bebida.update({ id: parseInt(id) }, req.body);
+        await Ticket.update({ id: parseInt(id) }, req.body);
 
         return res.sendStatus(204);
 
@@ -77,13 +93,13 @@ export const updateBebida = async (req: Request, res: Response) => {
 };
 
 
-export const deleteBebida = async (req: Request, res: Response) => {
+export const deleteTicket = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const result = await Bebida.delete({ id: parseInt(id) });
+        const result = await Ticket.delete({ id: parseInt(id) });
 
         if (result.affected === 0)
-            return res.status(404).json({ message: "Bebida no encontrada" });
+            return res.status(404).json({ message: "Ticket no encontrada" });
 
         return res.sendStatus(204);
     } catch (error) {

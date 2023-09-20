@@ -12,7 +12,7 @@ export class Bebida extends BaseEntity {
     @Column()
     litro: string;
 
-    @Column({ default: true })
-    precio: Double;
+    @Column()
+    precio: Number;
 
 }

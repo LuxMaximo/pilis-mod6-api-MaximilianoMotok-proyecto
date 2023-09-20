@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, CreateDateColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, CreateDateColumn, OneToOne, JoinColumn, OneToMany, ManyToOne } from "typeorm";
+import { getPostre } from "../controller/postre.controller";
 import { Bebida } from "./Bebidas";
 import { Comida } from "./Comidas";
 import { Postre } from "./Postres";
@@ -12,12 +13,12 @@ export class Menu extends BaseEntity {
     @Column()
     nombreMenu: string;
 
-    @Column()
+    @OneToMany(() => Postre, (clase) => clase)
     postre: Postre;
 
-    @Column()
+    @OneToMany(() => Bebida, (clase) => clase)
     bebida: Bebida;
 
-    @Column()
+    @OneToMany(() => Comida, (clase) => clase)
     comida: Comida;
 }

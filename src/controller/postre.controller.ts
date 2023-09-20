@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
-import { Bebida } from "../entity/Bebidas";
+import { Postre } from "../entity/Postres";
 
 
 //corregir
 
-export const getBebidas = async (req: Request, res: Response) => {
+export const getPostres = async (req: Request, res: Response) => {
     console.log('entrando...');
     try {
-        const bebidas = await Bebida.find({
+        const postre = await Postre.find({
             relations: {}
         })
-        return res.json(bebidas)
+        return res.json(postre)
 
     } catch (error) {
         if (error instanceof Error) {
@@ -20,18 +20,18 @@ export const getBebidas = async (req: Request, res: Response) => {
 };
 
 
-export const getBebida = async (req: Request, res: Response) => {
+export const getPostre = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const bebida = await Bebida.findOne({
+        const postre = await Postre.findOne({
             where: { id: parseInt(id) },
         })
 
 
-        if (!bebida) return res.status(404).json({ message: "User not found" });
+        if (!postre) return res.status(404).json({ message: "Postre not found" });
 
-        return res.json(bebida);
+        return res.json(postre);
 
     } catch (error) {
         if (error instanceof Error) {
@@ -41,31 +41,31 @@ export const getBebida = async (req: Request, res: Response) => {
 };
 
 
-export const createBebida = async (req: Request, res: Response) => {
-    const { nombre, litro, precio } = req.body;
+export const createPostre = async (req: Request, res: Response) => {
+    const { nombre, descripcion, precio } = req.body;
 
-    //Creacion de bebida
-    const bebida = new Bebida();
-    bebida.nombre = nombre;
-    bebida.litro = litro
-    bebida.precio = precio;
+    //Creacion de postre
+    const postre = new Postre();
+    postre.nombre = nombre;
+    postre.descripcion = descripcion;
+    postre.precio = precio;
 
 
-    await bebida.save();
+    await postre.save();
 
-    return res.json(bebida);
+    return res.json(postre);
 };
 
 
-export const updateBebida = async (req: Request, res: Response) => {
+export const updatePostre = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const bebida = await Bebida.findOneBy({ id: parseInt(id) });
+        const postre = await Postre.findOneBy({ id: parseInt(id) });
 
-        if (!bebida) return res.status(404).json({ message: "No se encontro la bebida" });
+        if (!postre) return res.status(404).json({ message: "No se encontro el postre" });
 
-        await Bebida.update({ id: parseInt(id) }, req.body);
+        await Postre.update({ id: parseInt(id) }, req.body);
 
         return res.sendStatus(204);
 
@@ -77,13 +77,13 @@ export const updateBebida = async (req: Request, res: Response) => {
 };
 
 
-export const deleteBebida = async (req: Request, res: Response) => {
+export const deletePostre = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const result = await Bebida.delete({ id: parseInt(id) });
+        const result = await Postre.delete({ id: parseInt(id) });
 
         if (result.affected === 0)
-            return res.status(404).json({ message: "Bebida no encontrada" });
+            return res.status(404).json({ message: "Postre no encontrado" });
 
         return res.sendStatus(204);
     } catch (error) {

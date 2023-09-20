@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, CreateDateColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, CreateDateColumn, OneToOne, JoinColumn, OneToMany, Double } from "typeorm";
 import { Pedido } from "./Pedidos";
 import { Usuario } from './Usuarios'
 
@@ -8,10 +8,10 @@ export class Ticket extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @OneToMany(() => Pedido, (ticket) => ticket)
     pedido: Pedido;
 
-    @Column()
+    @OneToMany(() => Usuario, (ticket) => ticket)
     usuario: Usuario;
 
     @CreateDateColumn()
@@ -19,5 +19,8 @@ export class Ticket extends BaseEntity {
 
     @Column({ default: false })
     devuelto: boolean;
+
+    @Column()
+    precioTotal: number;
 
 }

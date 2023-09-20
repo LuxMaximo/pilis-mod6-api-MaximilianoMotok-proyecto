@@ -1,1 +1,5 @@
 node_modules
+docker-compose/mysql/LuxComidas/auto.cnf
+docker-compose/mysql/LuxComidas/binlog.index
+docker-compose/mysql/LuxComidas/ib_buffer_pool
+docker-compose/mysql/LuxComidas/mysql.sock

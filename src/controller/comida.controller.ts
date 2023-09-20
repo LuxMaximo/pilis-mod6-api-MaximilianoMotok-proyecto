@@ -44,7 +44,7 @@ export const getComida = async (req: Request, res: Response) => {
 export const createComida = async (req: Request, res: Response) => {
     const { nombre, descripcion, precio } = req.body;
 
-    //Creacion de bebida
+    //Creacion de comida
     const comida = new Comida();
     comida.nombre = nombre;
     comida.descripcion = descripcion;
